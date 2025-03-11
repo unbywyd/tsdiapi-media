@@ -1,0 +1,22 @@
+{
+  "name": "tsdiapi-media",
+  "description": "A TSDIAPI plugin to extend API functionality with media.",
+  "variables": [
+    {
+      "name": "media_preview_size",
+      "type": "number",
+      "default": 512,
+      "configurable": true,
+      "description": "512",
+      "inquirer": {
+        "type": "input",
+        "message": "512",
+        "default": 512
+      }
+    }
+  ],
+  "postMessages": [
+    "✅ Plugin tsdiapi-media has been successfully installed!",
+    "📖 Check the documentation for more details!"
+  ]
+}
