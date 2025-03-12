@@ -3,17 +3,40 @@
   "description": "A TSDIAPI plugin to extend API functionality with media.",
   "variables": [
     {
-      "name": "media_preview_size",
+      "name": "MEDIA_PREVIEW_SIZE",
       "type": "number",
       "default": 512,
       "configurable": true,
-      "description": "512",
+      "description": "The size of the media preview image in pixels",
       "inquirer": {
         "type": "input",
-        "message": "512",
-        "default": 512
+        "message": "Enter the width of the media preview image in pixels:"
       }
     }
+  ],
+  "prisma": {
+    "required": true,
+    "scripts": [
+      {
+        "command": "ADD ENUM MediaType ({IMAGE|VIDEO|DOCUMENT|OTHER});",
+        "description": "Add MediaType enum"
+      },
+      {
+        "command": "ADD MODEL Media ({id String @id @default(cuid())|name String?|isPrivate Boolean @default(false)|format String?|type MediaType @default(OTHER)|width Float?|height Float?|mimetype String?|filesize Float?|url String|key String?|s3bucket String?|s3region String?});",
+        "description": "Add Media model"
+      },
+      {
+        "command": "ADD RELATION Media AND User (type=1:1, pivotTable=UserMedia);",
+        "description": "Add relation between Media and User"
+      },
+      {
+        "command": "ADD RELATION Media AND Media (type=1:M);",
+        "description": "Add relation between Media and Media (for previews)"
+      }
+    ]
+  },
+  "requiredPackages": [
+    "@tsdiapi/s3"
   ],
   "postMessages": [
     "✅ Plugin tsdiapi-media has been successfully installed!",
