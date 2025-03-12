@@ -148,7 +148,7 @@ let MediaService = class MediaService {
         try {
             const db = model('media');
             if (!db) {
-                console.log('media table not found');
+                console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return false;
             }
             const media = await db.findUnique({
@@ -197,7 +197,7 @@ let MediaService = class MediaService {
         try {
             const db = model('media');
             if (!db) {
-                console.log('media table not found');
+                console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return null;
             }
             const result = await this.uploadFunc(file, isPrivate);
@@ -222,7 +222,7 @@ let MediaService = class MediaService {
                 data.height = meta.height;
                 data.format = meta.format;
                 const buffer = file.buffer;
-                const { thumbnailBuffer } = await createThumbnail(buffer, this.previewSize);
+                const thumbnailBuffer = await createThumbnail(buffer, this.previewSize);
                 thumbnail = await this.uploadFunc({
                     buffer: thumbnailBuffer,
                     mimetype: file.mimetype,

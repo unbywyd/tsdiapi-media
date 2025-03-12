@@ -1,10 +1,10 @@
-import "reflect-metadata";
 import type { AppContext, AppPlugin } from "@tsdiapi/server";
-import { DeleteFunc, OnUpload } from "./service.js";
+import { DeleteFunc, MediaService, OnUpload } from "./service.js";
+export * from "./service.js";
 export type PluginOptions = {
     onDelete?: DeleteFunc;
     onUpload?: OnUpload;
-    previewSize?: string;
+    previewSize?: number;
 };
 declare class App implements AppPlugin {
     name: string;
@@ -13,6 +13,6 @@ declare class App implements AppPlugin {
     constructor(config?: PluginOptions);
     onInit(ctx: AppContext): Promise<void>;
 }
+export declare function getMediaProvider(): MediaService;
 export default function createPlugin(config?: PluginOptions): App;
-export {};
 //# sourceMappingURL=index.d.ts.map

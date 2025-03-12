@@ -1,7 +1,4 @@
-export declare const createThumbnail: (buffer: Buffer, size: number) => Promise<{
-    largeBuffer: Buffer;
-    thumbnailBuffer: Buffer;
-}>;
+export declare const createThumbnail: (buffer: Buffer, size: number) => Promise<Buffer<ArrayBufferLike>>;
 export type DeleteFunc = (key: string, isPrivate: boolean) => Promise<void> | void;
 export type UploadFunc = (file: Express.Multer.File, isPrivate: boolean) => Promise<UploadFile> | UploadFile;
 export type OnUpload = (file: Express.Multer.File, isPrivate: boolean, upload: UploadFile) => Promise<void> | void;
