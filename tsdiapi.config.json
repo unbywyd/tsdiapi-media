@@ -26,6 +26,10 @@
         "description": "Add Media model"
       },
       {
+        "command": "ADD MODEL User ({id String  @id @default(cuid()) | email String? @unique | phoneNumber String? @unique });",
+        "description": "Add User model to Prisma schema"
+      },
+      {
         "command": "ADD RELATION Media AND User (type=1:1, pivotTable=UserMedia);",
         "description": "Add relation between Media and User"
       },
@@ -36,7 +40,8 @@
     ]
   },
   "requiredPackages": [
-    "@tsdiapi/s3"
+    "@tsdiapi/s3",
+    "@tsdiapi/jwt-auth"
   ],
   "postMessages": [
     "✅ Plugin tsdiapi-media has been successfully installed!",

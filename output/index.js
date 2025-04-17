@@ -1,7 +1,8 @@
-import { MediaService } from "./service.js";
-import { getS3Provider } from "@tsdiapi/s3";
+import { useS3Provider } from "@tsdiapi/s3";
 import { Container } from "typedi";
-export * from "./service.js";
+import MediaService from "./media.service.js";
+import registerMetaRoutes from "./controller.js";
+export * from "./media.service.js";
 class App {
     name = 'tsdiapi-media';
     config;
@@ -10,32 +11,23 @@ class App {
         this.config = { ...config };
     }
     async onInit(ctx) {
+        const mediaService = Container.get(MediaService);
         this.context = ctx;
-        const mediaService = ctx.container.get(MediaService);
-        const appConfig = ctx.config.appConfig || {};
-        if (appConfig.previewSize) {
-            this.config.previewSize = parseInt(appConfig.previewSize);
-        }
-        if ('MEDIA_PREVIEW_SIZE' in appConfig) {
-            this.config.previewSize = parseInt(appConfig.MEDIA_PREVIEW_SIZE);
+        const config = ctx.projectConfig;
+        const previewSize = config.get("MEDIA_PREVIEW_SIZE", this.config.previewSize);
+        if (previewSize) {
+            this.config.previewSize = parseInt(previewSize);
         }
         if (!this.config.previewSize) {
             this.config.previewSize = 512;
         }
         mediaService.setPreviewSize(this.config.previewSize);
+        mediaService.setGeneratePreview(this.config.generatePreview ?? true);
         mediaService.setDeleteFunc(async (key, isPrivate) => {
-            try {
-                if (this.config.onDelete) {
-                    await this.config.onDelete(key, isPrivate);
-                }
-            }
-            catch (error) {
-                console.error('Error onDelete', error);
-            }
-            const s3provider = getS3Provider();
+            const s3provider = useS3Provider();
             if (s3provider) {
                 try {
-                    await s3provider.deleteFromS3(key);
+                    await s3provider.deleteFromS3(key, isPrivate);
                 }
                 catch (error) {
                     console.error(`Error deleting file ${key}. Please check your S3 credentials and configuration.`, error);
@@ -47,16 +39,17 @@ class App {
         });
         mediaService.setUploadFunc(async (file, isPrivate) => {
             try {
-                const s3provider = getS3Provider();
+                const s3provider = useS3Provider();
                 if (!s3provider) {
                     console.error('S3 provider not found. Please ensure the S3 plugin is passed to the tsdiapi application.');
                     return null;
                 }
                 try {
-                    const upload = await s3provider.uploadToS3(file, isPrivate);
-                    if (this.config.onUpload) {
-                        await this.config.onUpload(file, isPrivate, upload);
-                    }
+                    const upload = await s3provider.uploadToS3({
+                        buffer: file.buffer,
+                        mimetype: file.mimetype,
+                        originalname: file.filename
+                    }, isPrivate);
                     return upload;
                 }
                 catch (error) {
@@ -69,19 +62,14 @@ class App {
                 return null;
             }
         });
-        if (this.config.onUpload) {
-            mediaService.setOnUploadFunc(async (file, isPrivate, upload) => {
-                try {
-                    await this.config.onUpload(file, isPrivate, upload);
-                }
-                catch (error) {
-                    console.log('Error onUpload', error);
-                }
-            });
+    }
+    async preReady() {
+        if (this.config.autoRegisterControllers) {
+            await registerMetaRoutes(this.context);
         }
     }
 }
-export function getMediaProvider() {
+export function useMediaProvider() {
     return Container.get(MediaService);
 }
 export default function createPlugin(config) {
