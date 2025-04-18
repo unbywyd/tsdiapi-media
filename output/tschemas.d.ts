@@ -1,5 +1,10 @@
 import { Static } from '@sinclair/typebox';
-export declare const MediaTypeEnum: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<"IMAGE">, import("@sinclair/typebox").TLiteral<"VIDEO">, import("@sinclair/typebox").TLiteral<"DOCUMENT">, import("@sinclair/typebox").TLiteral<"OTHER">]>;
+export declare const MediaTypeEnum: import("@sinclair/typebox").TEnum<{
+    IMAGE: "IMAGE";
+    VIDEO: "VIDEO";
+    DOCUMENT: "DOCUMENT";
+    OTHER: "OTHER";
+}>;
 export declare enum MediaType {
     IMAGE = "IMAGE",
     VIDEO = "VIDEO",
@@ -14,7 +19,12 @@ export declare const MediaSchema: import("@sinclair/typebox").TObject<{
     name: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     isPrivate: import("@sinclair/typebox").TBoolean;
     format: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    type: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<"IMAGE">, import("@sinclair/typebox").TLiteral<"VIDEO">, import("@sinclair/typebox").TLiteral<"DOCUMENT">, import("@sinclair/typebox").TLiteral<"OTHER">]>;
+    type: import("@sinclair/typebox").TEnum<{
+        IMAGE: "IMAGE";
+        VIDEO: "VIDEO";
+        DOCUMENT: "DOCUMENT";
+        OTHER: "OTHER";
+    }>;
     width: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     height: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     media: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TObject<{
@@ -25,7 +35,12 @@ export declare const MediaSchema: import("@sinclair/typebox").TObject<{
         name: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
         isPrivate: import("@sinclair/typebox").TBoolean;
         format: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-        type: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<"IMAGE">, import("@sinclair/typebox").TLiteral<"VIDEO">, import("@sinclair/typebox").TLiteral<"DOCUMENT">, import("@sinclair/typebox").TLiteral<"OTHER">]>;
+        type: import("@sinclair/typebox").TEnum<{
+            IMAGE: "IMAGE";
+            VIDEO: "VIDEO";
+            DOCUMENT: "DOCUMENT";
+            OTHER: "OTHER";
+        }>;
         width: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
         height: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
         mimetype: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -49,7 +64,12 @@ export declare const CreateMediaSchema: import("@sinclair/typebox").TObject<{
     name: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     isPrivate: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     format: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    type: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<"IMAGE">, import("@sinclair/typebox").TLiteral<"VIDEO">, import("@sinclair/typebox").TLiteral<"DOCUMENT">, import("@sinclair/typebox").TLiteral<"OTHER">]>>;
+    type: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TEnum<{
+        IMAGE: "IMAGE";
+        VIDEO: "VIDEO";
+        DOCUMENT: "DOCUMENT";
+        OTHER: "OTHER";
+    }>>;
     width: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     height: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     mimetype: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -64,7 +84,12 @@ export declare const UpdateMediaSchema: import("@sinclair/typebox").TObject<{
     name: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     isPrivate: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     format: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    type: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<"IMAGE">, import("@sinclair/typebox").TLiteral<"VIDEO">, import("@sinclair/typebox").TLiteral<"DOCUMENT">, import("@sinclair/typebox").TLiteral<"OTHER">]>>;
+    type: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TEnum<{
+        IMAGE: "IMAGE";
+        VIDEO: "VIDEO";
+        DOCUMENT: "DOCUMENT";
+        OTHER: "OTHER";
+    }>>;
     width: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     height: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     mimetype: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;

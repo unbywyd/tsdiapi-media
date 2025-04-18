@@ -73,10 +73,10 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
         })
         .post('/upload/:type')
         .params(Type.Object({
-            type: Type.Union([
-                Type.Literal('private'),
-                Type.Literal('public')
-            ])
+            type: Type.Enum({
+                private: 'private',
+                public: 'public'
+            })
         }))
         .acceptMultipart()
         .code(200, Type.Array(MediaSchema))
