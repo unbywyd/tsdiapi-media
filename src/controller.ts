@@ -73,9 +73,8 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
         })
         .post('/upload/:type')
         .params(Type.Object({
-            type: Type.Enum({
-                private: 'private',
-                public: 'public'
+            type: Type.String({
+                enum: ['private', 'public']
             })
         }))
         .acceptMultipart()

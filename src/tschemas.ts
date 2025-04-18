@@ -2,11 +2,8 @@ import { Type } from '@sinclair/typebox';
 import { Static } from '@sinclair/typebox';
 import { DateString } from '@tsdiapi/server';
 
-export const MediaTypeEnum = Type.Enum({
-    IMAGE: 'IMAGE',
-    VIDEO: 'VIDEO',
-    DOCUMENT: 'DOCUMENT',
-    OTHER: 'OTHER'
+export const MediaTypeEnum = Type.String({
+    enum: ['IMAGE', 'VIDEO', 'DOCUMENT', 'OTHER']
 });
 export enum MediaType {
   IMAGE = "IMAGE",
