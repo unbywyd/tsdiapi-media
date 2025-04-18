@@ -146,7 +146,13 @@ export default class MediaService {
                 console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return null;
             }
+            const addPrefixTofileNameBeforeExtension = (fileName: string, prefix: string) => {
+                const extension = fileName.split('.').pop();
+                return `${prefix}-${fileName.split('.').slice(0, -1).join('.')}.${extension}`;
+            }
             const fileName = name || file.filename || file.id;
+            const thumbnailFileName = name ? name + '-thumbnail' : addPrefixTofileNameBeforeExtension(fileName, 'thumbnail');
+
             if (file.url) {
                 console.info(`Upload will be skipped as URL is provided: ${file.url}`);
             }
@@ -178,8 +184,8 @@ export default class MediaService {
                 type: this.getMediaType(file.mimetype)
             }
 
-            let thumbnail, thumbnailMeta;
-
+            let thumbnail: Record<string, any>, thumbnailMeta: Record<string, any>;
+      
             if (data.type === MediaType.IMAGE) {
                 const meta = await getImageMeta(file.buffer);
                 data.width = meta.width;
@@ -188,12 +194,13 @@ export default class MediaService {
 
                 const buffer = file.buffer;
                 if (this.generatePreview) {
+                    console.log(`Trying to create thumbnail for image: ${fileName}`);
                     const thumbnailBuffer = await createThumbnail(buffer, this.previewSize);
-                    console.info(`Uploading thumbnail to S3: ${thumbnailBuffer}`);
+                    console.info(`Thumbnail created for image: ${thumbnailFileName}`);
                     thumbnail = await this.uploadFunc({
                         buffer: thumbnailBuffer,
                         mimetype: file.mimetype,
-                        originalname: fileName + '-thumbnail'
+                        filename: thumbnailFileName
                     } as any, isPrivate) as unknown as UploadFile;
                     thumbnailMeta = await getImageMeta(thumbnailBuffer);
                     console.info(`Uploaded thumbnail to S3: ${thumbnail.url}`);
@@ -207,12 +214,20 @@ export default class MediaService {
             if (thumbnail) {
                 thumbnail = {
                     ...data,
-                    ...thumbnail,
-                    name: `${data.name}-thumbnail`,
+                    key: thumbnail?.key,
+                    url: thumbnail?.url,
+                    s3bucket: thumbnail?.bucket,
+                    s3region: thumbnail?.region,
+                    name: thumbnailFileName,
                     type: MediaType.IMAGE,
                     width: thumbnailMeta.width,
                     height: thumbnailMeta.height,
-                    format: thumbnailMeta.format
+                    format: thumbnailMeta.format,
+                    user: {
+                        create: {
+                            userId: userId as any
+                        }
+                    }
                 }
             }
             const media = await db.create({
@@ -230,7 +245,6 @@ export default class MediaService {
                     }
                 }
             });
-            console.info(`Created media: ${media}`);
             try {
                 if (this.onUpload$) {
                     this.onUpload$.next({
