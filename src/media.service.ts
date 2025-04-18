@@ -146,21 +146,25 @@ export default class MediaService {
                 console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return null;
             }
+            const fileName = name || file.filename || file.id;
             const result = file?.url ? {
                 ...file,
                 key: file.id,
                 region: file.s3region,
                 bucket: file.s3bucket,
                 type: this.getMediaType(file.mimetype),
-                name: name || file.fieldname || file.id,
-            } : await this.uploadFunc(file, isPrivate);
+                name: fileName,
+            } : await this.uploadFunc({
+                ...file,
+                filename: fileName,
+            }, isPrivate);
             if (!result?.url) {
                 console.log('Upload function did not return a URL, which is mandatory')
                 return null;
             }
             const data: Record<string, any> = {
                 key: result.key || null,
-                name: name || file.fieldname || result.key,
+                name: fileName,
                 url: result.url,
                 s3bucket: result.bucket || null,
                 s3region: result.region || null,
@@ -183,7 +187,7 @@ export default class MediaService {
                     thumbnail = await this.uploadFunc({
                         buffer: thumbnailBuffer,
                         mimetype: file.mimetype,
-                        originalname: file.filename
+                        originalname: fileName + '-thumbnail'
                     } as any, isPrivate) as unknown as UploadFile;
                     thumbnailMeta = await getImageMeta(thumbnailBuffer);
                 }
