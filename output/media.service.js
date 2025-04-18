@@ -134,6 +134,9 @@ let MediaService = class MediaService {
                 return null;
             }
             const fileName = name || file.filename || file.id;
+            if (file.url) {
+                console.info(`Upload will be skipped as URL is provided: ${file.url}`);
+            }
             const result = file?.url ? {
                 ...file,
                 key: file.id,
@@ -148,6 +151,9 @@ let MediaService = class MediaService {
             if (!result?.url) {
                 console.log('Upload function did not return a URL, which is mandatory');
                 return null;
+            }
+            else {
+                console.info(`Uploaded file to S3: ${result.url}`);
             }
             const data = {
                 key: result.key || null,
@@ -168,12 +174,14 @@ let MediaService = class MediaService {
                 const buffer = file.buffer;
                 if (this.generatePreview) {
                     const thumbnailBuffer = await createThumbnail(buffer, this.previewSize);
+                    console.info(`Uploading thumbnail to S3: ${thumbnailBuffer}`);
                     thumbnail = await this.uploadFunc({
                         buffer: thumbnailBuffer,
                         mimetype: file.mimetype,
                         originalname: fileName + '-thumbnail'
                     }, isPrivate);
                     thumbnailMeta = await getImageMeta(thumbnailBuffer);
+                    console.info(`Uploaded thumbnail to S3: ${thumbnail.url}`);
                 }
             }
             else {
@@ -208,6 +216,7 @@ let MediaService = class MediaService {
                     }
                 }
             });
+            console.info(`Created media: ${media}`);
             try {
                 if (this.onUpload$) {
                     this.onUpload$.next({
