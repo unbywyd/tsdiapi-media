@@ -6,8 +6,10 @@ import { Subject } from "rxjs";
 import type { UploadFile } from "@tsdiapi/server";
 import type { UploadFileResponse } from "@tsdiapi/s3";
 
-const prismaClient = usePrisma();
-const model = (model: string) => (model in (prismaClient as any)) ? (prismaClient as any)[model] : null;
+const model = (model: string) => {
+    const prismaClient = usePrisma();
+    return (model in (prismaClient as any)) ? (prismaClient as any)[model] : null;
+}
 const getImageMeta = async (buffer: Buffer): Promise<{ width: number, height: number, format: string }> => {
     const metadata = await sharp(buffer).metadata();
     return {
@@ -145,12 +147,12 @@ export default class MediaService {
                 return null;
             }
             const result = file?.url ? {
-               ...file,
-               key: file.id,
-               region: file.s3region,
-               bucket: file.s3bucket,
-               type: this.getMediaType(file.mimetype),
-               name: name || file.fieldname || file.id,            
+                ...file,
+                key: file.id,
+                region: file.s3region,
+                bucket: file.s3bucket,
+                type: this.getMediaType(file.mimetype),
+                name: name || file.fieldname || file.id,
             } : await this.uploadFunc(file, isPrivate);
             if (!result?.url) {
                 console.log('Upload function did not return a URL, which is mandatory')

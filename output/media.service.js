@@ -9,8 +9,10 @@ import sharp from "sharp";
 import { usePrisma } from "@tsdiapi/prisma";
 import { MediaType } from "./tschemas.js";
 import { Subject } from "rxjs";
-const prismaClient = usePrisma();
-const model = (model) => (model in prismaClient) ? prismaClient[model] : null;
+const model = (model) => {
+    const prismaClient = usePrisma();
+    return (model in prismaClient) ? prismaClient[model] : null;
+};
 const getImageMeta = async (buffer) => {
     const metadata = await sharp(buffer).metadata();
     return {
