@@ -13,10 +13,7 @@ const BodySchema = Type.Object({
 export default async function registerMetaRoutes({ useRoute }: AppContext) {
     useRoute()
         .controller('media')
-        .get('/by-user/:userId')
-        .params(Type.Object({
-            userId: Type.String()
-        }))
+        .get('/me')
         .description('Get media by userId')
         .code(403, Type.Object({
             error: Type.String()
@@ -39,15 +36,8 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
         .code(200, Type.Array(MediaSchema))
         .handler(async (req, reply) => {
             const session = req.session;
-            if (!session) {
-                return { status: 403, data: { error: 'Session not found' } };
-            }
-            const userId = req.params.userId;
-            if (!userId) {
-                return { status: 403, data: { error: 'Session does not have userId' } };
-            }
             const mediaService = useMediaProvider();
-            const media = await mediaService.getByUser(userId);
+            const media = await mediaService.getByUser(session.id || session.userId);
             return { status: 200, data: media };
         })
         .build();
