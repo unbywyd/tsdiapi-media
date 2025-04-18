@@ -42,7 +42,7 @@ export type UploadFunc = (file: UploadFile, isPrivate: boolean) => Promise<Uploa
 export type OnUploadEvent = {
     file: UploadFile;
     isPrivate: boolean;
-    upload: UploadFileResponse;
+    upload: UploadFileResponse | UploadFile;
 }
 
 @Service()
@@ -95,7 +95,7 @@ export default class MediaService {
                     where: {
                         deletedAt: null,
                         user: {
-                            userId: userId as any                            
+                            userId: userId as any
                         },
                         mediaBy: null
                     },
@@ -127,7 +127,7 @@ export default class MediaService {
                     user: true
                 }
             });
-            if(media?.user?.userId !== userId) {
+            if (media?.user?.userId !== userId) {
                 return null;
             }
             return media as MediaOutput;
@@ -144,7 +144,14 @@ export default class MediaService {
                 console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return null;
             }
-            const result = await this.uploadFunc(file, isPrivate);
+            const result = file?.url ? {
+               ...file,
+               key: file.id,
+               region: file.s3region,
+               bucket: file.s3bucket,
+               type: this.getMediaType(file.mimetype),
+               name: name || file.fieldname || file.id,            
+            } : await this.uploadFunc(file, isPrivate);
             if (!result?.url) {
                 console.log('Upload function did not return a URL, which is mandatory')
                 return null;

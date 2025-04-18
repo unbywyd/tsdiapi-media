@@ -12,7 +12,7 @@ export type UploadFunc = (file: UploadFile, isPrivate: boolean) => Promise<Uploa
 export type OnUploadEvent = {
     file: UploadFile;
     isPrivate: boolean;
-    upload: UploadFileResponse;
+    upload: UploadFileResponse | UploadFile;
 };
 export default class MediaService {
     private previewSize;
