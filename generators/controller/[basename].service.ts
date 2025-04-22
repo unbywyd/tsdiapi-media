@@ -4,11 +4,13 @@ import { MediaOutput, MediaType } from "./{{kebabCase name}}.tschemas.js";
 import { Subject } from "rxjs";
 import type { UploadFile } from "@tsdiapi/server";
 import type { UploadFileResponse } from "@tsdiapi/s3";
-import { PrismaClient } from "@generated/prisma/client.js";
+import type { PrismaClient } from "@generated/prisma/index.js";
+import { usePrisma } from "@tsdiapi/prisma";
 
-const model = (model: string) => {
-    return PrismaClient[model];
+const model = () => {
+    return usePrisma<PrismaClient>()['media']
 }
+
 const getImageMeta = async (buffer: Buffer): Promise<{ width: number, height: number, format: string }> => {
     const metadata = await sharp(buffer).metadata();
     return {
@@ -87,7 +89,7 @@ export default class MediaService {
     public getByUser(userId: string | number): Promise<MediaOutput[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const db = model('media');
+                const db = model();
                 if (!db) {
                     console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                     return resolve([]);
@@ -113,7 +115,7 @@ export default class MediaService {
 
     public async getById(id: string, userId: string): Promise<MediaOutput | null> {
         try {
-            const db = model('media');
+            const db = model();
             if (!db) {
                 console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return null;
@@ -140,7 +142,7 @@ export default class MediaService {
 
     async uploadFile(userId: string | number, file: UploadFile, isPrivate = false, name?: string): Promise<MediaOutput | null> {
         try {
-            const db = model('media');
+            const db = model();
             if (!db) {
                 console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return null;
@@ -287,7 +289,7 @@ export default class MediaService {
     }
     async deleteMedia(mediaId: string): Promise<boolean> {
         try {
-            const db = model('media');
+            const db = model();
             if (!db) {
                 console.log('Media entity not found in Prisma client. Please check your Prisma schema.');
                 return false;
