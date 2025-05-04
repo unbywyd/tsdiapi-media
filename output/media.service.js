@@ -83,13 +83,15 @@ let MediaService = class MediaService {
                 const media = await db.findMany({
                     where: {
                         deletedAt: null,
-                        user: {
-                            userId: userId
+                        references: {
+                            some: {
+                                userId: userId
+                            }
                         },
-                        mediaBy: null
+                        parentId: null
                     },
                     include: {
-                        media: true
+                        variations: true
                     }
                 });
                 resolve(media);
@@ -112,11 +114,11 @@ let MediaService = class MediaService {
                     deletedAt: null
                 },
                 include: {
-                    media: true,
-                    user: true
+                    variations: true,
+                    references: true
                 }
             });
-            if (media?.user?.userId !== userId) {
+            if (media?.references?.some((r) => r.userId !== userId)) {
                 return null;
             }
             return media;
@@ -208,7 +210,7 @@ let MediaService = class MediaService {
                     width: thumbnailMeta.width,
                     height: thumbnailMeta.height,
                     format: thumbnailMeta.format,
-                    user: {
+                    references: {
                         create: {
                             userId: userId
                         }
@@ -219,11 +221,11 @@ let MediaService = class MediaService {
                 data: {
                     ...data,
                     ...(thumbnail ? {
-                        media: {
+                        variations: {
                             create: thumbnail
                         }
                     } : {}),
-                    user: {
+                    references: {
                         create: {
                             userId: userId
                         }
@@ -247,7 +249,7 @@ let MediaService = class MediaService {
                     id: media.id
                 },
                 include: {
-                    media: true
+                    variations: true
                 }
             });
             return mediaData;
@@ -285,7 +287,7 @@ let MediaService = class MediaService {
                     id: mediaId,
                 },
                 include: {
-                    media: true
+                    variations: true
                 }
             });
             if (!media) {
@@ -310,8 +312,8 @@ let MediaService = class MediaService {
             catch (error) {
                 console.log(error);
             }
-            if (media.media?.length) {
-                for (const m of media.media) {
+            if (media.variations?.length) {
+                for (const m of media.variations) {
                     try {
                         if (m.key) {
                             await this.deleteMedia(m?.id);

@@ -17,7 +17,7 @@ export declare const MediaSchema: import("@sinclair/typebox").TObject<{
     type: import("@sinclair/typebox").TString;
     width: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
     height: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
-    media: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TObject<{
+    variations: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TObject<{
         id: import("@sinclair/typebox").TString;
         createdAt: import("@sinclair/typebox").TDate;
         updatedAt: import("@sinclair/typebox").TDate;
@@ -34,7 +34,7 @@ export declare const MediaSchema: import("@sinclair/typebox").TObject<{
         key: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
         s3bucket: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
         s3region: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-        mediaId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+        parentId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     }>>>;
     mimetype: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     filesize: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TNumber>;
@@ -42,7 +42,7 @@ export declare const MediaSchema: import("@sinclair/typebox").TObject<{
     key: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     s3bucket: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     s3region: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    mediaId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    parentId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
 }>;
 export type MediaOutput = Static<typeof MediaSchema>;
 export declare const CreateMediaSchema: import("@sinclair/typebox").TObject<{
@@ -58,7 +58,7 @@ export declare const CreateMediaSchema: import("@sinclair/typebox").TObject<{
     key: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     s3bucket: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     s3region: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    mediaId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    parentId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
 }>;
 export declare const UpdateMediaSchema: import("@sinclair/typebox").TObject<{
     name: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -73,6 +73,6 @@ export declare const UpdateMediaSchema: import("@sinclair/typebox").TObject<{
     key: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     s3bucket: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     s3region: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    mediaId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    parentId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
 }>;
 //# sourceMappingURL=tschemas.d.ts.map

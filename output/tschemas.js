@@ -21,7 +21,7 @@ export const MediaSchema = Type.Object({
     type: MediaTypeEnum,
     width: Type.Optional(Type.Number()),
     height: Type.Optional(Type.Number()),
-    media: Type.Optional(Type.Array(Type.Object({
+    variations: Type.Optional(Type.Array(Type.Object({
         id: Type.String(),
         createdAt: DateString(),
         updatedAt: DateString(),
@@ -38,7 +38,7 @@ export const MediaSchema = Type.Object({
         key: Type.Optional(Type.String()),
         s3bucket: Type.Optional(Type.String()),
         s3region: Type.Optional(Type.String()),
-        mediaId: Type.Optional(Type.String()),
+        parentId: Type.Optional(Type.String()),
     }))),
     mimetype: Type.Optional(Type.String()),
     filesize: Type.Optional(Type.Number()),
@@ -46,7 +46,7 @@ export const MediaSchema = Type.Object({
     key: Type.Optional(Type.String()),
     s3bucket: Type.Optional(Type.String()),
     s3region: Type.Optional(Type.String()),
-    mediaId: Type.Optional(Type.String())
+    parentId: Type.Optional(Type.String())
 });
 export const CreateMediaSchema = Type.Object({
     name: Type.Optional(Type.String()),
@@ -61,7 +61,7 @@ export const CreateMediaSchema = Type.Object({
     key: Type.Optional(Type.String()),
     s3bucket: Type.Optional(Type.String()),
     s3region: Type.Optional(Type.String()),
-    mediaId: Type.Optional(Type.String())
+    parentId: Type.Optional(Type.String())
 });
 export const UpdateMediaSchema = Type.Partial(CreateMediaSchema);
 //# sourceMappingURL=tschemas.js.map

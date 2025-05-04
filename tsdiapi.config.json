@@ -51,11 +51,19 @@
         "description": "Add User model to Prisma schema"
       },
       {
-        "command": "ADD RELATION Media AND User (type=1:1, pivotTable=UserMedia);",
+        "command": "ADD MODEL MediaReference ({id String  @id @default(cuid())});",
+        "description": "Add MediaReference model to Prisma schema"
+      },
+      {
+        "command": "ADD RELATION MediaReference AND Media (type=1:M, required, pluralName=references);",
         "description": "Add relation between Media and User"
       },
       {
-        "command": "ADD RELATION Media AND Media (type=1:M);",
+        "command": "ADD RELATION MediaReference AND User (type=1:M);",
+        "description": "Add relation between MediaReference and User"
+      },
+      {
+        "command": "ADD RELATION Media AND Media (type=1:M,refName=parent,fkName=parentId,pluralName=variations);",
         "description": "Add relation between Media and Media (for previews)"
       }
     ]

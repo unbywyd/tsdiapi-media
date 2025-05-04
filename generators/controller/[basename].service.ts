@@ -97,13 +97,15 @@ export default class MediaService {
                 const media = await db.findMany({
                     where: {
                         deletedAt: null,
-                        user: {
-                            userId: userId as any
+                        references: {
+                            some: {
+                                userId: userId as any
+                            }
                         },
-                        mediaBy: null
+                        parentId: null
                     },
                     include: {
-                        media: true
+                        variations: true
                     }
                 });
                 resolve(media as MediaOutput[]);
@@ -126,11 +128,11 @@ export default class MediaService {
                     deletedAt: null
                 },
                 include: {
-                    media: true,
-                    user: true
+                    variations: true,
+                    references: true
                 }
             });
-            if (media?.user?.userId !== userId) {
+            if (media?.references?.some(r => r.userId !== userId)) {
                 return null;
             }
             return media as MediaOutput;
@@ -139,6 +141,7 @@ export default class MediaService {
             return null;
         }
     }
+
 
     async uploadFile(userId: string | number, file: UploadFile, isPrivate = false, name?: string): Promise<MediaOutput | null> {
         try {
@@ -186,7 +189,7 @@ export default class MediaService {
             }
 
             let thumbnail: Record<string, any>, thumbnailMeta: Record<string, any>;
-      
+
             if (data.type === MediaType.IMAGE) {
                 const meta = await getImageMeta(file.buffer);
                 data.width = meta.width;
@@ -224,7 +227,7 @@ export default class MediaService {
                     width: thumbnailMeta.width,
                     height: thumbnailMeta.height,
                     format: thumbnailMeta.format,
-                    user: {
+                    references: {
                         create: {
                             userId: userId as any
                         }
@@ -235,11 +238,11 @@ export default class MediaService {
                 data: {
                     ...data as any,
                     ...(thumbnail ? {
-                        media: {
+                        variations: {
                             create: thumbnail
                         }
                     } : {}),
-                    user: {
+                    references: {
                         create: {
                             userId: userId as any
                         }
@@ -263,7 +266,7 @@ export default class MediaService {
                     id: media.id
                 },
                 include: {
-                    media: true
+                    variations: true
                 }
             });
             return mediaData as MediaOutput;
@@ -299,7 +302,7 @@ export default class MediaService {
                     id: mediaId,
                 },
                 include: {
-                    media: true
+                    variations: true
                 }
             });
             if (!media) {
@@ -324,8 +327,8 @@ export default class MediaService {
                 console.log(error);
             }
 
-            if (media.media?.length) {
-                for (const m of media.media) {
+            if (media.variations?.length) {
+                for (const m of media.variations) {
                     try {
                         if (m.key) {
                             await this.deleteMedia(m?.id);
