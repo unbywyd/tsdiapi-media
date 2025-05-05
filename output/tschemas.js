@@ -64,4 +64,8 @@ export const CreateMediaSchema = Type.Object({
     parentId: Type.Optional(Type.String())
 });
 export const UpdateMediaSchema = Type.Partial(CreateMediaSchema);
+export const GetMediaSchema = Type.Object({
+    userId: Type.Optional(Type.String()),
+    adminId: Type.Optional(Type.String())
+});
 //# sourceMappingURL=tschemas.js.map

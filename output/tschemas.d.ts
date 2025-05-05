@@ -75,4 +75,9 @@ export declare const UpdateMediaSchema: import("@sinclair/typebox").TObject<{
     s3region: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     parentId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
 }>;
+export declare const GetMediaSchema: import("@sinclair/typebox").TObject<{
+    userId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    adminId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+}>;
+export type GetMediaSchema = Static<typeof GetMediaSchema>;
 //# sourceMappingURL=tschemas.d.ts.map

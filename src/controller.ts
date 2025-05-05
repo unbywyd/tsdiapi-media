@@ -14,7 +14,7 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
     useRoute()
         .controller('media')
         .get('/me')
-        .description('Get media by userId')
+        .description('Get media')
         .code(403, Type.Object({
             error: Type.String()
         }))
@@ -36,12 +36,16 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
         .code(200, Type.Array(MediaSchema))
         .handler(async (req, reply) => {
             const session = req.session;
+            const query = {
+                ...((session?.id && !session.adminId) ? { userId: session.id } : {}),
+                ...(session?.adminId ? { adminId: session.adminId } : {})
+            }
             const mediaService = useMediaProvider();
-            const media = await mediaService.getByUser(session.id || session.userId);
+            const media = await mediaService.getBy(query);
             return { status: 200, data: media };
         })
         .build();
-        
+
     useRoute()
         .controller('media')
         .body(BodySchema)
@@ -74,19 +78,16 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
             maxFiles: 10 // максимальное количество файлов
         })
         .setRequestFormat('multipart/form-data')
-        .handler(async (req, reply) => {
+        .handler(async (req) => {
             const isPrivate = req.params.type === 'private';
             const session = req.session;
-            if (!session) {
-                return { status: 403, data: { error: 'Session not found' } };
-            }
-            const user = session.userId || session.id;
-            if (!user) {
-                return { status: 403, data: { error: 'Session does not have userId' } };
+            const query = {
+                ...((session?.id && !session.adminId) ? { userId: session.id } : {}),
+                ...(session?.adminId ? { adminId: session.adminId } : {})
             }
             const files = req.tempFiles;
             const mediaService = useMediaProvider();
-            const uploaded = await mediaService.uploadFiles(user, files, isPrivate);
+            const uploaded = await mediaService.uploadFiles(query, files, isPrivate);
             return { status: 200, data: uploaded };
         })
         .build();
@@ -117,22 +118,18 @@ export default async function registerMetaRoutes({ useRoute }: AppContext) {
             return true;
         })
         .code(200, MediaSchema)
-        .handler(async (req, reply) => {
+        .handler(async (req) => {
             const session = req.session;
-            if (!session) {
-                return { status: 403, data: { error: 'Session not found' } };
-            }
-            const id = req.params.id;
-            if (!id) {
-                return { status: 403, data: { error: 'Media ID is required' } };
+            const query = {
+                ...((session?.id && !session.adminId) ? { userId: session.id } : {}),
+                ...(session?.adminId ? { adminId: session.adminId } : {})
             }
             const mediaService = useMediaProvider();
-            const user = session.userId || session.id;
-            const media = await mediaService.getById(id, user);
+            const media = await mediaService.getById(req.params.id, query);
             if (!media) {
                 return { status: 401, data: { error: 'Media not found' } };
             }
-     
+
             return { status: 200, data: media };
         })
         .build();

@@ -70,3 +70,9 @@ export const CreateMediaSchema = Type.Object({
 });
 
 export const UpdateMediaSchema = Type.Partial(CreateMediaSchema);
+
+export const GetMediaSchema = Type.Object({
+  userId: Type.Optional(Type.String()),
+  adminId: Type.Optional(Type.String())
+});
+export type GetMediaSchema = Static<typeof GetMediaSchema>;

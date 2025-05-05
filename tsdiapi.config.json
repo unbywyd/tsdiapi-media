@@ -51,6 +51,10 @@
         "description": "Add User model to Prisma schema"
       },
       {
+        "command": "ADD MODEL Admin ({id String  @id @default(cuid()) | email String? @unique | phoneNumber String @unique | password String | name String? });",
+        "description": "Add Admin model to Prisma schema"
+      },
+      {
         "command": "ADD MODEL MediaReference ({id String  @id @default(cuid())});",
         "description": "Add MediaReference model to Prisma schema"
       },
@@ -61,6 +65,10 @@
       {
         "command": "ADD RELATION MediaReference AND User (type=1:M);",
         "description": "Add relation between MediaReference and User"
+      },
+      {
+        "command": "ADD RELATION MediaReference AND Admin (type=1:M);",
+        "description": "Add relation between MediaReference and Admin"
       },
       {
         "command": "ADD RELATION Media AND Media (type=1:M,refName=parent,fkName=parentId,pluralName=variations);",

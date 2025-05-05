@@ -1,4 +1,4 @@
-import { MediaOutput, MediaType } from "./tschemas.js";
+import { GetMediaSchema, MediaOutput, MediaType } from "./tschemas.js";
 import { Subject } from "rxjs";
 import type { UploadFile } from "@tsdiapi/server";
 import type { UploadFileResponse } from "@tsdiapi/s3";
@@ -28,10 +28,10 @@ export default class MediaService {
     uploadFunc: UploadFunc;
     setDeleteFunc(func: DeleteFunc): void;
     setUploadFunc(func: UploadFunc): void;
-    getByUser(userId: string | number): Promise<MediaOutput[]>;
-    getById(id: string, userId: string): Promise<MediaOutput | null>;
-    uploadFile(userId: string | number, file: UploadFile, isPrivate?: boolean, name?: string): Promise<MediaOutput | null>;
-    uploadFiles(userId: string | number, files: UploadFile[], isPrivate?: boolean): Promise<MediaOutput[]>;
-    deleteMedia(mediaId: string): Promise<boolean>;
+    getBy(params: GetMediaSchema): Promise<MediaOutput[]>;
+    getById(id: string, params: GetMediaSchema): Promise<MediaOutput | null>;
+    uploadFile(params: GetMediaSchema, file: UploadFile, isPrivate?: boolean, name?: string): Promise<MediaOutput | null>;
+    uploadFiles(params: GetMediaSchema, files: UploadFile[], isPrivate?: boolean): Promise<MediaOutput[]>;
+    deleteMedia(params: GetMediaSchema, mediaId: string): Promise<boolean>;
 }
 //# sourceMappingURL=media.service.d.ts.map

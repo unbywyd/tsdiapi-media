@@ -72,7 +72,7 @@ let MediaService = class MediaService {
     setUploadFunc(func) {
         this.uploadFunc = func;
     }
-    getByUser(userId) {
+    getBy(params) {
         return new Promise(async (resolve, reject) => {
             try {
                 const db = model('media');
@@ -85,7 +85,8 @@ let MediaService = class MediaService {
                         deletedAt: null,
                         references: {
                             some: {
-                                userId: userId
+                                ...(params.userId ? { userId: params.userId } : {}),
+                                ...(params.adminId ? { adminId: params.adminId } : {})
                             }
                         },
                         parentId: null
@@ -101,7 +102,7 @@ let MediaService = class MediaService {
             }
         });
     }
-    async getById(id, userId) {
+    async getById(id, params) {
         try {
             const db = model('media');
             if (!db) {
@@ -118,7 +119,7 @@ let MediaService = class MediaService {
                     references: true
                 }
             });
-            if (media?.references?.some((r) => r.userId !== userId)) {
+            if (media?.references?.some((r) => r.userId !== params.userId && r.adminId !== params.adminId)) {
                 return null;
             }
             return media;
@@ -128,7 +129,7 @@ let MediaService = class MediaService {
             return null;
         }
     }
-    async uploadFile(userId, file, isPrivate = false, name) {
+    async uploadFile(params, file, isPrivate = false, name) {
         try {
             const db = model('media');
             if (!db) {
@@ -212,7 +213,8 @@ let MediaService = class MediaService {
                     format: thumbnailMeta.format,
                     references: {
                         create: {
-                            userId: userId
+                            ...(params.userId ? { userId: params.userId } : {}),
+                            ...(params.adminId ? { adminId: params.adminId } : {})
                         }
                     }
                 };
@@ -227,7 +229,8 @@ let MediaService = class MediaService {
                     } : {}),
                     references: {
                         create: {
-                            userId: userId
+                            ...(params.userId ? { userId: params.userId } : {}),
+                            ...(params.adminId ? { adminId: params.adminId } : {})
                         }
                     }
                 }
@@ -259,11 +262,11 @@ let MediaService = class MediaService {
             return null;
         }
     }
-    async uploadFiles(userId, files, isPrivate = false) {
+    async uploadFiles(params, files, isPrivate = false) {
         try {
             const results = [];
             for (const file of files) {
-                const result = await this.uploadFile(userId, file, isPrivate);
+                const result = await this.uploadFile(params, file, isPrivate);
                 if (result) {
                     results.push(result);
                 }
@@ -275,7 +278,7 @@ let MediaService = class MediaService {
             return null;
         }
     }
-    async deleteMedia(mediaId) {
+    async deleteMedia(params, mediaId) {
         try {
             const db = model('media');
             if (!db) {
@@ -291,6 +294,9 @@ let MediaService = class MediaService {
                 }
             });
             if (!media) {
+                return false;
+            }
+            if (media.references?.some((r) => r.userId !== params.userId && r.adminId !== params.adminId)) {
                 return false;
             }
             try {
@@ -316,7 +322,7 @@ let MediaService = class MediaService {
                 for (const m of media.variations) {
                     try {
                         if (m.key) {
-                            await this.deleteMedia(m?.id);
+                            await this.deleteMedia(params, m?.id);
                         }
                     }
                     catch (error) {

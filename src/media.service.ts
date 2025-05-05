@@ -1,10 +1,11 @@
 import { Service } from "typedi";
 import sharp from "sharp";
 import { usePrisma } from "@tsdiapi/prisma";
-import { MediaOutput, MediaType } from "./tschemas.js";
+import { GetMediaSchema, MediaOutput, MediaType } from "./tschemas.js";
 import { Subject } from "rxjs";
 import type { UploadFile } from "@tsdiapi/server";
 import type { UploadFileResponse } from "@tsdiapi/s3";
+
 
 const model = (model: string) => {
     const prismaClient = usePrisma();
@@ -85,7 +86,7 @@ export default class MediaService {
     public setUploadFunc(func: UploadFunc) {
         this.uploadFunc = func;
     }
-    public getByUser(userId: string | number): Promise<MediaOutput[]> {
+    public getBy(params: GetMediaSchema): Promise<MediaOutput[]> {
         return new Promise(async (resolve, reject) => {
             try {
                 const db = model('media');
@@ -98,7 +99,8 @@ export default class MediaService {
                         deletedAt: null,
                         references: {
                             some: {
-                                userId: userId as any
+                                ...(params.userId ? { userId: params.userId } : {}),
+                                ...(params.adminId ? { adminId: params.adminId } : {})
                             }
                         },
                         parentId: null
@@ -114,7 +116,7 @@ export default class MediaService {
         });
     }
 
-    public async getById(id: string, userId: string): Promise<MediaOutput | null> {
+    public async getById(id: string, params: GetMediaSchema): Promise<MediaOutput | null> {
         try {
             const db = model('media');
             if (!db) {
@@ -131,7 +133,7 @@ export default class MediaService {
                     references: true
                 }
             });
-            if (media?.references?.some((r: any) => r.userId !== userId)) {
+            if (media?.references?.some((r: any) => r.userId !== params.userId && r.adminId !== params.adminId)) {
                 return null;
             }
             return media as MediaOutput;
@@ -141,7 +143,7 @@ export default class MediaService {
         }
     }
 
-    async uploadFile(userId: string | number, file: UploadFile, isPrivate = false, name?: string): Promise<MediaOutput | null> {
+    async uploadFile(params: GetMediaSchema, file: UploadFile, isPrivate = false, name?: string): Promise<MediaOutput | null> {
         try {
             const db = model('media');
             if (!db) {
@@ -227,7 +229,8 @@ export default class MediaService {
                     format: thumbnailMeta.format,
                     references: {
                         create: {
-                            userId: userId as any
+                            ...(params.userId ? { userId: params.userId } : {}),
+                            ...(params.adminId ? { adminId: params.adminId } : {})
                         }
                     }
                 }
@@ -242,7 +245,8 @@ export default class MediaService {
                     } : {}),
                     references: {
                         create: {
-                            userId: userId as any
+                            ...(params.userId ? { userId: params.userId } : {}),
+                            ...(params.adminId ? { adminId: params.adminId } : {})
                         }
                     }
                 }
@@ -273,11 +277,11 @@ export default class MediaService {
             return null;
         }
     }
-    async uploadFiles(userId: string | number, files: UploadFile[], isPrivate = false): Promise<MediaOutput[]> {
+    async uploadFiles(params: GetMediaSchema, files: UploadFile[], isPrivate = false): Promise<MediaOutput[]> {
         try {
             const results: MediaOutput[] = [];
             for (const file of files) {
-                const result = await this.uploadFile(userId, file, isPrivate);
+                const result = await this.uploadFile(params, file, isPrivate);
                 if (result) {
                     results.push(result);
                 }
@@ -288,7 +292,7 @@ export default class MediaService {
             return null;
         }
     }
-    async deleteMedia(mediaId: string): Promise<boolean> {
+    async deleteMedia(params: GetMediaSchema, mediaId: string): Promise<boolean> {
         try {
             const db = model('media');
             if (!db) {
@@ -304,6 +308,9 @@ export default class MediaService {
                 }
             });
             if (!media) {
+                return false;
+            }
+            if (media.references?.some((r: any) => r.userId !== params.userId && r.adminId !== params.adminId)) {
                 return false;
             }
             try {
@@ -329,7 +336,7 @@ export default class MediaService {
                 for (const m of media.variations) {
                     try {
                         if (m.key) {
-                            await this.deleteMedia(m?.id);
+                            await this.deleteMedia(params, m?.id);
                         }
                     } catch (error) {
                         console.log(error);
