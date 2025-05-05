@@ -304,7 +304,8 @@ export default class MediaService {
                     id: mediaId,
                 },
                 include: {
-                    variations: true
+                    variations: true,
+                    references: true
                 }
             });
             if (!media) {
