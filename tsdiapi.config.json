@@ -55,7 +55,7 @@
         "description": "Add Admin model to Prisma schema"
       },
       {
-        "command": "ADD MODEL MediaReference ({id String  @id @default(cuid())});",
+        "command": "ADD MODEL MediaReference ({id String  @id @default(cuid()) | isCommon Boolean @default(false)});",
         "description": "Add MediaReference model to Prisma schema"
       },
       {
